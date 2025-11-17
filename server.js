@@ -10,7 +10,7 @@ const io = new Server(server, {
     cors: {
         origin: "*"
     }  
-});
+}); 
 
 const room = "groupChatRoom";
 
