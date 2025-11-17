@@ -1,0 +1,17 @@
+@"
+# Environment
+.env
+.env.*
+.env.local
+
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+"@ | Out-File -FilePath .gitignore -Encoding utf8
