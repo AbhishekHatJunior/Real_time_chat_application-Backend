@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
   socket.on("chatMssg", (mssg, currRoom) => {
     console.log("Message in room:", currRoom, "Content:", mssg);
     // ✅ FIX: Broadcast to all users in the room including sender
-    socket.to(currRoom).emit("chatmssg", mssg);
+    io.to(currRoom).emit("chatmssg", mssg);
   });
 
   // ✅ ADD: Handle disconnection
