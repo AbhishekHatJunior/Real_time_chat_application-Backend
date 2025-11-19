@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", async (userName, room) => {
     console.log(`${userName} is joining room: ${room}`);
     await socket.join(room);
-    socket.to(room).emit("roomNotice", `${userName} joined the room`);
+    socket.to(room).emit("roomNotice", userName);
   });
 
   socket.on("chatMssg", (mssg, currRoom) => {
