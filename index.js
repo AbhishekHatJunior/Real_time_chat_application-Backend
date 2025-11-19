@@ -1,10 +1,17 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import cors from "cors"; // ✅ ADD CORS import
 
 const app = express();
 
-// ✅ ADD: Health check endpoint (CRITICAL for Render)
+// ✅ ADD: CORS middleware for Express
+app.use(cors({
+  origin: ["https://ustalkchat.vercel.app", "http://localhost:3000"],
+  credentials: true
+}));
+
+// ✅ ADD: Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -29,10 +36,10 @@ const port = process.env.PORT || 3000;
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: ["https://ustalkchat.vercel.app", "http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true
   },
-  // ✅ ADD: Transport methods for better compatibility
   transports: ['websocket', 'polling']
 });
 
@@ -40,16 +47,15 @@ io.on("connection", (socket) => {
   console.log("User connected -", socket.id);
 
   socket.on("joinRoom", async (userName, room) => {
-    console.log(`${userName} is joining the chat.`);
+    console.log(`${userName} is joining room: ${room}`);
     await socket.join(room);
-    console.log(`Notice sent to room: ${room}`);
-    socket.to(room).emit("roomNotice", userName);
+    socket.to(room).emit("roomNotice", `${userName} joined the room`);
   });
 
   socket.on("chatMssg", (mssg, currRoom) => {
-    console.log("Message sent to room:", currRoom);
-    // ✅ FIX: Use io.to() instead of socket.to() to broadcast to all in room
-    iosocket.to(currRoom).emit("chatmssg", mssg);
+    console.log("Message in room:", currRoom, "Content:", mssg);
+    // ✅ FIX: Broadcast to all users in the room including sender
+    socket.to(currRoom).emit("chatmssg", mssg);
   });
 
   // ✅ ADD: Handle disconnection
@@ -60,5 +66,5 @@ io.on("connection", (socket) => {
 
 server.listen(port, () => { 
   console.log(`🚀 Server is listening on port: ${port}`);
-  console.log(`📍 Health check available at: http://localhost:${port}/health`);
+  console.log(`📍 Health check: http://localhost:${port}/health`);
 });
