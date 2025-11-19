@@ -13,20 +13,27 @@ const io = new Server(server, {
     }  
 }); 
 
-const room = "groupChatRoom";
 
 io.on("connection", (socket) => {
     console.log("User connected -", socket.id);
 
-    socket.on("joinRoom", async (userName) => {
+    // socket.data.users = [];
+
+    socket.on("joinRoom", async (userName, room) => {
         console.log(`${userName} is joining the chat.`);
+        // socket.data.users.push(userName);
+        // socket.data.room = roomUsers;
+        // const roomUsers = socket.data.users;
         await socket.join(room);
         // io.to(room).emit("roomNotice", userName);
+        console.log(`Notice sent to room: ${room}`);
         socket.to(room).emit("roomNotice", userName);
     })
 
-    socket.on("chatMssg", (mssg) => {
-        socket.to(room).emit("chatmssg", mssg);
+    socket.on("chatMssg", (mssg, currRoom) => {
+        // const room = socket.data.room;
+        console.log("Message sent to room:", currRoom);
+        socket.to(currRoom).emit("chatmssg", mssg, currRoom);
     })
 
 })
